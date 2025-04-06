@@ -3,13 +3,24 @@ import http from 'http';
 import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 import dotenv from "dotenv";
+import codeBlockRoutes from './routes/codeBlockRoutes'; 
 
+const mongoURI = "mongodb+srv://yuvalitzhak:Yuvali0031@cluster0.xmx1g.mongodb.net/webSocket?retryWrites=true&w=majority";
 console.log('hello');
 
 dotenv.config(); 
 
 const app = express();
 app.use(express.json());
+
+//routes
+app.use('/api', codeBlockRoutes);  
+
+//mongoDB connection
+mongoose.connect(mongoURI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.log('MongoDB connection error: ', err));
+
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -20,8 +31,8 @@ const io = new Server(server, {
     }
 });
 
-//handle a new socket connection
 
+//handle a new socket connection
 //let mentorSocket: any = null;
 
 io.on('connection', (socket) => {
@@ -87,7 +98,7 @@ app.get('/', (req, res) => {
 
 
 //TODO - check whay .env file does not used
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
