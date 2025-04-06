@@ -20,33 +20,62 @@ const io = new Server(server, {
     }
 });
 
-//handling a new socket connection
-let mentorSocket: any = null;
+//handle a new socket connection
+
+//let mentorSocket: any = null;
 
 io.on('connection', (socket) => {
   console.log('a user connected: ', socket.id);
 
-  socket.on('joinRoom', (roomId) => {
+  //handle user joining a room (mentor or student)
+  socket.on('joinRoom', (roomId : string) => {
     socket.join(roomId);
-    if (io.sockets.adapter.rooms.get(roomId)?.size === 1) {
+    (socket as any).roomId = roomId;
+
+    const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 0;
+
+    if (roomSize === 1) {
       //first user to join = Mentor
-      mentorSocket = socket;
+      //mentorSocket = socket; 
       socket.emit('role', 'mentor');
+      (socket as any).role = 'mentor';
+
     } else {
       socket.emit('role', 'student');
+      (socket as any).role = 'student';
     }
   });
 
-  //handler at code update - broadcast code changes to students
+  //handle at code updates - broadcast code changes to students
   socket.on('codeUpdate', (roomId, code) => {
     socket.to(roomId).emit('codeUpdate', code);
   });
 
-  //notify the students in the room when the mentor leave and clear students code
-  socket.on('disconnect', (roomId) => {
-    console.log('user disconnected:', socket.id);
-    if (socket === mentorSocket) {
+  //handle user disconnecting
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+
+    const roomId = (socket as any).roomId;
+    const role = (socket as any).role;
+
+    if (role === 'mentor' && roomId) {
+      //notify the students in the room that mentor left
       io.to(roomId).emit('mentorLeft');
+
+      //disconnect all students and mentor from the room
+      const clients = io.sockets.adapter.rooms.get(roomId);
+      if (clients) {
+        clients.forEach((clientId) => {
+          const clientSocket = io.sockets.sockets.get(clientId);
+          clientSocket?.leave(roomId);
+        });
+      }
+
+      console.log(`Mentor left. Room "${roomId}" cleared.`);
+    }
+    else if(role === 'student' && roomId){
+      socket.leave(roomId);
+
     }
   });
 });
@@ -57,6 +86,7 @@ app.get('/', (req, res) => {
 });
 
 
+//TODO - check whay .env file does not used
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
