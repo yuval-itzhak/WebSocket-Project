@@ -44,6 +44,7 @@ io.on('connection', (socket) => {
     (socket as any).roomId = roomId;
 
     const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 0;
+    io.to(roomId).emit('studentCount', roomSize - 1);
 
     if (roomSize === 1) {
       //first user to join = Mentor
