@@ -5,11 +5,14 @@ import { Server } from 'socket.io';
 import dotenv from "dotenv";
 import cors from 'cors';
 import codeBlockRoutes from './routes/codeBlockRoutes'; 
+import CodeBlock from './models/CodeBlock'
 
-const mongoURI = "mongodb+srv://yuvalitzhak:Yuvali0031@cluster0.xmx1g.mongodb.net/codeBlockData?retryWrites=true&w=majority";
+//const mongoURI = "mongodb+srv://yuvalitzhak:Yuvali0031@cluster0.xmx1g.mongodb.net/codeBlockData?retryWrites=true&w=majority";
 
 dotenv.config(); 
 
+const mongoURI = process.env.MONGO_URI;
+if(!mongoURI){ throw new Error(' MONGO_URI is not defined in .env');};
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -35,19 +38,18 @@ const io = new Server(server, {
 
 
 //handle a new socket connection
-//let mentorSocket: any = null;
-const roomsCurrentSolutions: Record<string,string> = {} 
-
 io.on('connection', (socket) => {
   console.log('a user connected: ', socket.id);
 
   //handle user joining a room (mentor or student)
-  socket.on('joinRoom', (roomId : string) => {
+  socket.on('joinRoom', async (roomId : string) => {
     console.log(`joinRoom trigerred`);
     socket.join(roomId);
 
+    const room = await CodeBlock.findById(roomId);
+    
     (socket as any).roomId = roomId;
-    socket.emit('codeUpdate', roomsCurrentSolutions[roomId]);
+    socket.emit('codeUpdate', room?.currentCode);
 
     const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 1;
     console.log(`room size :`, roomSize);
@@ -55,10 +57,8 @@ io.on('connection', (socket) => {
 
     if (roomSize === 1) {
       //first user to join = Mentor
-      //mentorSocket = socket; 
       socket.emit('role', 'mentor');
       (socket as any).role = 'mentor';
-      roomsCurrentSolutions[roomId] = "";
 
     } else {
       socket.emit('role', 'student');
@@ -67,21 +67,28 @@ io.on('connection', (socket) => {
   });
 
   //handle at code updates - broadcast code changes to students
-  socket.on('codeUpdate', (roomId, code) => {
-    roomsCurrentSolutions[roomId] = code;
-    socket.to(roomId).emit('codeUpdate', code);
+  socket.on('codeUpdate', async (roomId, code) => {
+    const result = await CodeBlock.updateOne(
+      { _id: roomId },                  
+      { $set: { currentCode: code } } 
+    );
+      socket.to(roomId).emit('codeUpdate', code);
   });
 
   //handle user disconnecting
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     console.log('User disconnected:', socket.id);
 
     const roomId = (socket as any).roomId;
     const role = (socket as any).role;
 
     if (role === 'mentor' && roomId) {
-      //notify the students in the room that mentor left
+
+      //notify the students in the room that mentor left and resat code
       io.to(roomId).emit('mentorLeft');
+      const resatRoom = await CodeBlock.updateOne(
+        { _id: roomId },                  
+        { $set: { currentCode: "" } } );
 
       //disconnect all students and mentor from the room
       const clients = io.sockets.adapter.rooms.get(roomId);
@@ -103,10 +110,6 @@ io.on('connection', (socket) => {
   });
 });
 
-//TODO - delete
-app.get('/', (req, res) => {
-  res.send('server is running');
-});
 
 
 //TODO - check whay .env file does not used
