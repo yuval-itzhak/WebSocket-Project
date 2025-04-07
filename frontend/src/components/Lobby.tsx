@@ -5,7 +5,7 @@ const Lobby = () => {
     const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
 
     useEffect(()=> {
-        fetch('http://localhost:5003/api/codeBlocks')
+        fetch('http://localhost:5000/api/codeBlocks')
         .then((res) => res.json())
         .then((data) => setCodeBlocks(data));
     }, []);

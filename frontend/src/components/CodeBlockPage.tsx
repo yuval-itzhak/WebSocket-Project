@@ -4,6 +4,8 @@ import {io} from 'socket.io-client';
 import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion } from '@codemirror/autocomplete';
 import  CodeMirror  from '@uiw/react-codemirror';
+import debounce from 'lodash.debounce';
+
 // import { linter } from "@codemirror/lint";
 // import { basicSetup } from "@codemirror/basic-setup";
 
@@ -17,7 +19,7 @@ const CodeBlockPage = () => {
     const socketRef = useRef<any>(null);
 
     useEffect(() => { 
-        socketRef.current = io('http://localhost:5003');
+        socketRef.current = io('http://localhost:5000');
 
         socketRef.current.emit('joinRoom', room_id);  
         socketRef.current.on('role', (role: string) => setRole(role));
@@ -33,12 +35,9 @@ const CodeBlockPage = () => {
 
     }, []);
 
-    const handleCodeChange = (updatedCode : string) => {
-        setCode(updatedCode);
-        if (socketRef.current) {
-            socketRef.current.emit('codeUpdate', room_id, updatedCode);
-        }
-    };
+    const emitCodeUpdate = debounce((updatedCode: string) => {
+        socketRef.current?.emit('codeUpdate', room_id, updatedCode);
+      }, 700); // wait 700 ms between after last key
 
     const isSolutionCorrect = code === solution;
 
@@ -53,7 +52,10 @@ const CodeBlockPage = () => {
             height="300px"
             extensions={[javascript(),autocompletion()]}
             editable={role !== 'mentor'}
-            onChange={handleCodeChange}
+            onChange={(value) => {
+                setCode(value);
+                emitCodeUpdate(value);
+              }}
             />
     
           {isSolutionCorrect && <div style={{ fontSize: '50px' }}>😊</div>}
