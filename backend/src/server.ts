@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
     (socket as any).roomId = roomId;
     socket.emit('codeUpdate', roomsCurrentSolutions[roomId]);
 
-    const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 0;
+    const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 1;
     console.log(`room size :`, roomSize);
     io.to(roomId).emit('studentCount', roomSize - 1 );
 
@@ -95,6 +95,8 @@ io.on('connection', (socket) => {
       console.log(`Mentor left. Room "${roomId}" cleared.`);
     }
     else if(role === 'student' && roomId){
+      const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 1;
+      io.to(roomId).emit('studentCount', roomSize - 1 );
       socket.leave(roomId);
 
     }
