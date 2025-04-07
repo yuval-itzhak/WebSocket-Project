@@ -46,7 +46,7 @@ const CodeBlockPage = () => {
           <CodeMirror
             value={code}
             height="300px"
-            extensions={[EditorView.lineWrapping]} // Correct usage of extensions
+            extensions={[javascript(), EditorView.lineWrapping]}
             editable={role !== 'mentor'}
             />
     
