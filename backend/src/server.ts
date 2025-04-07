@@ -3,6 +3,7 @@ import http from 'http';
 import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 import dotenv from "dotenv";
+import cors from 'cors';
 import codeBlockRoutes from './routes/codeBlockRoutes'; 
 
 const mongoURI = "mongodb+srv://yuvalitzhak:Yuvali0031@cluster0.xmx1g.mongodb.net/webSocket?retryWrites=true&w=majority";
@@ -11,10 +12,13 @@ console.log('hello');
 dotenv.config(); 
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 //routes
 app.use('/api', codeBlockRoutes);  
+
+
 
 //mongoDB connection
 mongoose.connect(mongoURI)
@@ -99,7 +103,7 @@ app.get('/', (req, res) => {
 
 
 //TODO - check whay .env file does not used
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5003;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
