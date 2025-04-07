@@ -7,7 +7,6 @@ import cors from 'cors';
 import codeBlockRoutes from './routes/codeBlockRoutes'; 
 
 const mongoURI = "mongodb+srv://yuvalitzhak:Yuvali0031@cluster0.xmx1g.mongodb.net/codeBlockData?retryWrites=true&w=majority";
-console.log('hello');
 
 dotenv.config(); 
 
@@ -31,30 +30,35 @@ const io = new Server(server, {
     cors:{
         origin: "*",
         methods: ["GET", "POST"]
-
     }
 });
 
 
 //handle a new socket connection
 //let mentorSocket: any = null;
+const roomsCurrentSolutions: Record<string,string> = {} 
 
 io.on('connection', (socket) => {
   console.log('a user connected: ', socket.id);
 
   //handle user joining a room (mentor or student)
   socket.on('joinRoom', (roomId : string) => {
+    console.log(`joinRoom trigerred`);
     socket.join(roomId);
+
     (socket as any).roomId = roomId;
+    socket.emit('codeUpdate', roomsCurrentSolutions[roomId]);
 
     const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 0;
-    io.to(roomId).emit('studentCount', roomSize - 1);
+    console.log(`room size :`, roomSize);
+    io.to(roomId).emit('studentCount', roomSize - 1 );
 
     if (roomSize === 1) {
       //first user to join = Mentor
       //mentorSocket = socket; 
       socket.emit('role', 'mentor');
       (socket as any).role = 'mentor';
+      roomsCurrentSolutions[roomId] = "";
 
     } else {
       socket.emit('role', 'student');
@@ -64,6 +68,7 @@ io.on('connection', (socket) => {
 
   //handle at code updates - broadcast code changes to students
   socket.on('codeUpdate', (roomId, code) => {
+    roomsCurrentSolutions[roomId] = code;
     socket.to(roomId).emit('codeUpdate', code);
   });
 

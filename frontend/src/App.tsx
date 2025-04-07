@@ -8,8 +8,8 @@ const App = ()=> {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/codeblocks" element={<Lobby/>}/>
-        <Route path="/codeblocks/:id" element={<CodeBlockPage />} />
+        <Route path="/" element={<Lobby/>}/>
+        <Route path="/codeblocks/:room_id" element={<CodeBlockPage />} />
       </Routes>
     </BrowserRouter>
   );
