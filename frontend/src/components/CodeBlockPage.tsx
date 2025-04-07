@@ -1,16 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
 import {io} from 'socket.io-client';
-import { EditorView } from '@codemirror/view';
-import { javascript } from '@codemirror/lang-javascript';
+import { javascript } from "@codemirror/lang-javascript";
+import { autocompletion } from '@codemirror/autocomplete';
 import  CodeMirror  from '@uiw/react-codemirror';
+// import { linter } from "@codemirror/lint";
+// import { basicSetup } from "@codemirror/basic-setup";
+
 
 
 const CodeBlockPage = () => {
     const { id } = useParams<{id:string}>();
     const [code, setCode] = useState('');
     const [role, setRole] = useState<string>('student');
-    const [solution, setSolution] = useState<string>('');
+    const [solution, setSolution] = useState<string>('Enter solution');
     const [studentCount, setStudentCount] = useState<number>(0);
     const socket = io('http://localhost:5003');
 
@@ -46,7 +49,7 @@ const CodeBlockPage = () => {
           <CodeMirror
             value={code}
             height="300px"
-            extensions={[javascript(), EditorView.lineWrapping]}
+            extensions={[javascript(),autocompletion()]}
             editable={role !== 'mentor'}
             />
     

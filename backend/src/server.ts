@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import codeBlockRoutes from './routes/codeBlockRoutes'; 
 
-const mongoURI = "mongodb+srv://yuvalitzhak:Yuvali0031@cluster0.xmx1g.mongodb.net/webSocket?retryWrites=true&w=majority";
+const mongoURI = "mongodb+srv://yuvalitzhak:Yuvali0031@cluster0.xmx1g.mongodb.net/codeBlockData?retryWrites=true&w=majority";
 console.log('hello');
 
 dotenv.config(); 
