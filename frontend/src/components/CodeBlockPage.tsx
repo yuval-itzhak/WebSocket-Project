@@ -9,24 +9,29 @@ import { Box, Typography } from '@mui/material';
 
 
 const CodeBlockPage = () => {
-    const { room_id } = useParams<{room_id:string}>();
+    const { roomId } = useParams<{roomId:string}>();
     const [code, setCode] = useState('');
     const [role, setRole] = useState<string>('student');
     const [solution, setSolution] = useState<string>('');
     const [studentCount, setStudentCount] = useState<number>(0);
     const socketRef = useRef<any>(null);
-    const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
+    const [codeBlock, setCodeBlock] = useState<any>();
+    const [isLoading, setLoading] = useState(true);
 
     useEffect(() => { 
+      setLoading(true);
       const apiUrl = process.env.REACT_APP_API_URL;
 
         socketRef.current = io(`${apiUrl}`);
 
-        fetch(`${apiUrl}/api/codeBlocks`)
+        fetch(`${apiUrl}/api/codeBlocks/${roomId}`)
         .then((res) => res.json())
-        .then((data) => setCodeBlocks(data));
+        .then((data) => {
+          setCodeBlock(data)
+          setLoading(false);
+        });
 
-        socketRef.current.emit('joinRoom', room_id);  
+        socketRef.current.emit('joinRoom', roomId);  
         socketRef.current.on('role', (role: string) => setRole(role));
         socketRef.current.on('codeUpdate', (updatedCode: string) => setCode(updatedCode));
         socketRef.current.on('solution', (solution: string) => setSolution(solution));
@@ -42,15 +47,18 @@ const CodeBlockPage = () => {
     }, []);
 
     const emitCodeUpdate = useDebouncedCallback((updatedCode: string) => {
-        socketRef.current?.emit('codeUpdate', room_id, updatedCode);
+        socketRef.current?.emit('codeUpdate', roomId, updatedCode);
         console.log(`im here`);
       }, 400); // wait 400 ms between after last key
 
-      const roomCodeBlock = codeBlocks.find((block: any) => block._id === room_id);
-      const codeBlockName = roomCodeBlock ? roomCodeBlock.name : '';
-      const codeBlockDesc = roomCodeBlock ? roomCodeBlock.description : '';
-      //const solution = roomCodeBlock ? roomCodeBlock.solution : '';
-      const isSolutionCorrect = code === solution;      
+      const codeBlockName = codeBlock ? codeBlock.name : '';
+      const codeBlockDesc = codeBlock ? codeBlock.description : '';
+      const isSolutionCorrect = code === solution && code !== ""; 
+      
+    if (isLoading) {
+      return <p>Loading...</p>; 
+    }
+    
       return (
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -75,7 +83,7 @@ const CodeBlockPage = () => {
               setCode(value);
               emitCodeUpdate(value);}}/>
 
-         {isSolutionCorrect && <div style={{ fontSize: '50px' }}>😊</div>}
+         {isSolutionCorrect && !isLoading && <div style={{ fontSize: '50px' }}>😊</div>}
 
       </Box>
   );   
