@@ -14,9 +14,14 @@ const CodeBlockPage = () => {
     const [solution, setSolution] = useState<string>('n');
     const [studentCount, setStudentCount] = useState<number>(0);
     const socketRef = useRef<any>(null);
+    const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
 
     useEffect(() => { 
         socketRef.current = io('http://localhost:5000');
+
+        fetch("http://localhost:5000/api/codeBlocks")
+        .then((res) => res.json())
+        .then((data) => setCodeBlocks(data));
 
         socketRef.current.emit('joinRoom', room_id);  
         socketRef.current.on('role', (role: string) => setRole(role));
@@ -37,11 +42,16 @@ const CodeBlockPage = () => {
         socketRef.current?.emit('codeUpdate', room_id, updatedCode);
       }, 700); // wait 700 ms between after last key
 
-    const isSolutionCorrect = code === solution;
+      const roomCodeBlock = codeBlocks.find((block: any) => block._id === room_id);
+      const codeBlockName = roomCodeBlock ? roomCodeBlock.name : '';
+      const codeBlockDesc = roomCodeBlock ? roomCodeBlock.description : '';
+      //const solution = roomCodeBlock ? roomCodeBlock.solution : '';
+      const isSolutionCorrect = code === solution;      
 
     return (
         <div>
-          <h1>Code Block</h1>
+          <h1>Code Block: {codeBlockName}</h1>
+          <p>{codeBlockDesc}</p>
           <p>Role: {role}</p>
           <p>Students in Room: {studentCount}</p>
     
