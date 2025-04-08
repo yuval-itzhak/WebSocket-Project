@@ -18,9 +18,11 @@ const CodeBlockPage = () => {
     const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
 
     useEffect(() => { 
-        socketRef.current = io('http://localhost:5000');
+      const apiUrl = process.env.REACT_APP_API_URL;
 
-        fetch("http://localhost:5000/api/codeBlocks")
+        socketRef.current = io(`${apiUrl}`);
+
+        fetch(`${apiUrl}/api/codeBlocks`)
         .then((res) => res.json())
         .then((data) => setCodeBlocks(data));
 

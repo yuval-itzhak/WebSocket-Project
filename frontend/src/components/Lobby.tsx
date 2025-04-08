@@ -10,11 +10,14 @@ import {
   Stack,
 } from "@mui/material";
 
+
 const Lobby = () => {
   const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/codeBlocks")
+    const apiUrl = process.env.REACT_APP_API_URL;
+
+    fetch(`${apiUrl}/api/codeBlocks`)
       .then((res) => res.json())
       .then((data) => setCodeBlocks(data));
   }, []);
