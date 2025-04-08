@@ -47,23 +47,39 @@ io.on('connection', (socket) => {
     socket.join(roomId);
 
     const room = await CodeBlock.findById(roomId);
-    
-    (socket as any).roomId = roomId;
-    socket.emit('codeUpdate', room?.currentCode);
 
     const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 1;
     console.log(`room size :`, roomSize);
     io.to(roomId).emit('studentCount', roomSize - 1 );
+    
+    //TODO check if nessecery to add this property
+    (socket as any).roomId = roomId;
 
+    // const result = await CodeBlock.updateOne(
+    //   { _id: roomId },                  
+    //   { $set: { currentCode: room?.initialCode } } 
+    // );
+
+    // socket.emit('codeUpdate', room?.currentCode);
+
+    if (room?.currentCode === ""){
+      socket.emit('codeUpdate', room?.initialCode);
+    }
+    else{
+      socket.emit('codeUpdate', room?.currentCode);
+    }
     if (roomSize === 1) {
       //first user to join = Mentor
       socket.emit('role', 'mentor');
       (socket as any).role = 'mentor';
 
+
     } else {
       socket.emit('role', 'student');
       (socket as any).role = 'student';
     }
+
+
   });
 
   //handle at code updates - broadcast code changes to students
@@ -111,8 +127,6 @@ io.on('connection', (socket) => {
 });
 
 
-
-//TODO - check whay .env file does not used
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -14,7 +14,7 @@ const CodeBlockPage = () => {
     const { room_id } = useParams<{room_id:string}>();
     const [code, setCode] = useState('');
     const [role, setRole] = useState<string>('student');
-    const [solution, setSolution] = useState<string>('Enter solution');
+    const [solution, setSolution] = useState<string>('n');
     const [studentCount, setStudentCount] = useState<number>(0);
     const socketRef = useRef<any>(null);
 
