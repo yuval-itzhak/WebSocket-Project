@@ -5,6 +5,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion } from '@codemirror/autocomplete';
 import  CodeMirror  from '@uiw/react-codemirror';
 import debounce from 'lodash.debounce';
+import { Box, Typography } from '@mui/material';
 
 
 const CodeBlockPage = () => {
@@ -47,33 +48,35 @@ const CodeBlockPage = () => {
       const codeBlockDesc = roomCodeBlock ? roomCodeBlock.description : '';
       //const solution = roomCodeBlock ? roomCodeBlock.solution : '';
       const isSolutionCorrect = code === solution;      
+      return (
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h4" gutterBottom>
+            Code Block: {codeBlockName}
+          </Typography>
+          <Typography variant="body1" paragraph>
+            {codeBlockDesc}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            Role: {role}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            Students in Room: {studentCount}
+          </Typography>
 
-    return (
-        <div>
-          <h1>Code Block: {codeBlockName}</h1>
-          <p>{codeBlockDesc}</p>
-          <p>Role: {role}</p>
-          <p>Students in Room: {studentCount}</p>
-    
           <CodeMirror
             value={code}
             height="300px"
-            extensions={[javascript(),autocompletion()]}
+            extensions={[javascript(), autocompletion()]}
             editable={role !== 'mentor'}
             onChange={(value) => {
-                setCode(value);
-                emitCodeUpdate(value);
-              }}
-            />
-    
-          {isSolutionCorrect && <div style={{ fontSize: '50px' }}>😊</div>}
-        </div>
-    );
+              setCode(value);
+              emitCodeUpdate(value);}}/>
 
+         {isSolutionCorrect && <div style={{ fontSize: '50px' }}>😊</div>}
+
+      </Box>
+  );   
 };
 
 export default CodeBlockPage;
-
-      
-
 
