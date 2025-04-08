@@ -51,14 +51,10 @@ io.on('connection', (socket) => {
     const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 1;
     console.log(`room size :`, roomSize);
     io.to(roomId).emit('studentCount', roomSize - 1 );
+    io.to(roomId).emit('solution', room?.solution );
     
-    //TODO check if nessecery to add this property
     (socket as any).roomId = roomId;
 
-    // const result = await CodeBlock.updateOne(
-    //   { _id: roomId },                  
-    //   { $set: { currentCode: room?.initialCode } } 
-    // );
 
     // socket.emit('codeUpdate', room?.currentCode);
 

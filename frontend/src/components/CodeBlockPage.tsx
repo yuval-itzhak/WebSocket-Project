@@ -24,6 +24,7 @@ const CodeBlockPage = () => {
         socketRef.current.emit('joinRoom', room_id);  
         socketRef.current.on('role', (role: string) => setRole(role));
         socketRef.current.on('codeUpdate', (updatedCode: string) => setCode(updatedCode));
+        socketRef.current.on('solution', (solution: string) => setSolution(solution));
         socketRef.current.on('studentCount', (count: number) => setStudentCount(count));
         socketRef.current.on('mentorLeft', () => {
           window.location.href = '/'; //redirect to lobby if mentor leaves
