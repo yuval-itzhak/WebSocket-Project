@@ -1,29 +1,50 @@
-import React, {useState, useEffect} from "react";
-import {Link} from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  CardActionArea,
+  Box,
+  Stack,
+} from "@mui/material";
 
 const Lobby = () => {
-    const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
+  const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
 
-    useEffect(()=> {
-        fetch('http://localhost:5000/api/codeBlocks')
-        .then((res) => res.json())
-        .then((data) => setCodeBlocks(data));
-    }, []);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/codeBlocks")
+      .then((res) => res.json())
+      .then((data) => setCodeBlocks(data));
+  }, []);
 
-    return(
-        <div>
-            <h1>Choose Code Block</h1>
-            <ul>
-                {codeBlocks.map((block) => (
-                    <li key={block._id}>
-                        <Link to={`/codeblocks/${block._id}`}>{block.name}</Link>
-                    </li>
-                ))}
-            </ul>
+  return (
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom align="center">
+        Choose a Code Block
+      </Typography>
 
-        </div>
-    );
-
+      <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
+        {codeBlocks.map((block) => (
+          <Box key={block._id} width={{ xs: "100%", sm: "45%", md: "30%" }}>
+            <Card variant="outlined" sx={{ height: "100%" }}>
+                <CardActionArea component={Link} to={`/codeblocks/${block._id}`} sx={{ height: "100%" }}>
+                    <CardContent>
+                        <Typography variant="h6" component="div" gutterBottom>
+                        {block.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                        {block.description || "No description available."}
+                        </Typography>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
+          </Box>
+        ))}
+      </Stack>
+    </Container>
+  );
 };
 
 export default Lobby;

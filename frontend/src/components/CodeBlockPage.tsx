@@ -6,9 +6,6 @@ import { autocompletion } from '@codemirror/autocomplete';
 import  CodeMirror  from '@uiw/react-codemirror';
 import debounce from 'lodash.debounce';
 
-// import { linter } from "@codemirror/lint";
-// import { basicSetup } from "@codemirror/basic-setup";
-
 
 const CodeBlockPage = () => {
     const { room_id } = useParams<{room_id:string}>();
