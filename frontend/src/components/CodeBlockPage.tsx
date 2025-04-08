@@ -4,7 +4,7 @@ import {io} from 'socket.io-client';
 import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion } from '@codemirror/autocomplete';
 import  CodeMirror  from '@uiw/react-codemirror';
-import debounce from 'lodash.debounce';
+import { useDebouncedCallback } from 'use-debounce';
 import { Box, Typography } from '@mui/material';
 
 
@@ -12,7 +12,7 @@ const CodeBlockPage = () => {
     const { room_id } = useParams<{room_id:string}>();
     const [code, setCode] = useState('');
     const [role, setRole] = useState<string>('student');
-    const [solution, setSolution] = useState<string>('n');
+    const [solution, setSolution] = useState<string>('');
     const [studentCount, setStudentCount] = useState<number>(0);
     const socketRef = useRef<any>(null);
     const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
@@ -41,9 +41,10 @@ const CodeBlockPage = () => {
 
     }, []);
 
-    const emitCodeUpdate = debounce((updatedCode: string) => {
+    const emitCodeUpdate = useDebouncedCallback((updatedCode: string) => {
         socketRef.current?.emit('codeUpdate', room_id, updatedCode);
-      }, 700); // wait 700 ms between after last key
+        console.log(`im here`);
+      }, 400); // wait 400 ms between after last key
 
       const roomCodeBlock = codeBlocks.find((block: any) => block._id === room_id);
       const codeBlockName = roomCodeBlock ? roomCodeBlock.name : '';

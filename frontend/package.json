@@ -28,6 +28,7 @@
     "serve": "^14.2.4",
     "socket.io-client": "^4.8.1",
     "typescript": "^4.9.5",
+    "use-debounce": "^10.0.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
