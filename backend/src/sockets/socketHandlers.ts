@@ -1,5 +1,7 @@
 import { Server, Socket } from "socket.io";
 import CodeBlock from "../models/CodeBlock";
+import { evaluateCode } from "../utils/evaluateCode";
+import { copyFileSync } from "fs";
 
 const handleSocketConnection = (io: Server, socket: Socket) => {
   console.log('a user connected:', socket.id);
@@ -36,11 +38,26 @@ const handleSocketConnection = (io: Server, socket: Socket) => {
 
   //handle at code updates - broadcast code changes to students
   socket.on('codeUpdate', async (roomId, code) => {
+
+    const room = await CodeBlock.findById(roomId);
+    if (!room) {
+        return;
+    }
+    const { functionParameters, expectedOutput } = room;
+    const result = await evaluateCode(code, functionParameters, room.functionName);
+
+    const isCorrect = result === expectedOutput;
+    console.log(`result is: ${result}, type is: ${typeof result}`);
+    console.log(`expected Output: ${expectedOutput}, type is: ${typeof expectedOutput}`)
+    console.log(`is correct: ${isCorrect}`)
+    socket.emit('solutionCheckResult', isCorrect);
+
     await CodeBlock.updateOne(
-      { _id: roomId },                  
-      { $set: { currentCode: code } } 
-    );
-      socket.to(roomId).emit('codeUpdate', code);
+        { _id: roomId },                  
+        { $set: { currentCode: code } } );
+
+    socket.to(roomId).emit('codeUpdate', code);
+
   });
 
 

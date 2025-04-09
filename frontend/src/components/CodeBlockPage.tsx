@@ -18,6 +18,7 @@ const CodeBlockPage = () => {
     const [codeBlock, setCodeBlock] = useState<any>();
     const [isLoading, setLoading] = useState(true);
     const [showPanel, setShowPanel] = useState(false);
+    const [isSolutionCorrect, setIsSolutionCorrect] = useState(false);
 
     useEffect(() => { 
       setLoading(true);
@@ -37,6 +38,7 @@ const CodeBlockPage = () => {
         socketRef.current.on('codeUpdate', (updatedCode: string) => setCode(updatedCode));
         socketRef.current.on('solution', (solution: string) => setSolution(solution));
         socketRef.current.on('studentCount', (count: number) => setStudentCount(count));
+        socketRef.current.on('solutionCheckResult', (result: any) => setIsSolutionCorrect(result));
         socketRef.current.on('mentorLeft', () => {
           window.location.href = '/'; //redirect to lobby if mentor leaves
         });
@@ -62,7 +64,7 @@ const CodeBlockPage = () => {
 
     const codeBlockName = codeBlock ? codeBlock.name : '';
     const codeBlockDesc = codeBlock ? codeBlock.description : '';
-    const isSolutionCorrect = code === solution && code !== ""; 
+    //const isSolutionCorrect = code === solution && code !== ""; 
       
     if (isLoading) {
       return <p>Loading...</p>; 
@@ -107,7 +109,9 @@ const CodeBlockPage = () => {
               }}
             >
               <Typography variant="h6">solution</Typography>
-              <Typography variant="body2">{solution}</Typography>
+              <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
+              {solution}
+              </Typography>
             </Box>
           )}
 
