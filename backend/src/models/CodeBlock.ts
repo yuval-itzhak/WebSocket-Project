@@ -38,7 +38,8 @@ const codeBlockSchema = new mongoose.Schema({
 });
 
 
-// Tell Mongoose: use the exact collection name 'codeBlock'
+
+//Tell Mongoose: use the exact collection name 'codeBlock'
 const CodeBlock = mongoose.model('CodeBlock', codeBlockSchema, 'codeBlock');
 
 export default CodeBlock;

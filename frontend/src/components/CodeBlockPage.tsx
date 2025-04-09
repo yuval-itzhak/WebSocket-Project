@@ -74,7 +74,7 @@ const CodeBlockPage = () => {
       return (
         <Box sx={{ p: 3, position: 'relative' }}>
 
-          <Box display="flex" justifyContent="right" alignItems="center" >
+          <Box display="flex" justifyContent="left" alignItems="center" sx={{ mb: 2}} >
             <Button variant='outlined' color='primary' size='small' onClick={handleClick}>
               Back to Lobby
             </Button>
@@ -117,7 +117,7 @@ const CodeBlockPage = () => {
             </Box>
           )}
 
-         {isSolutionCorrect && !isLoading && <div style={{ fontSize: '50px' }}>😊</div>}
+         {isSolutionCorrect && !isLoading && <div style={{ fontSize: '50px' }}>😊 Good Job!</div>}
 
           {/* for the code editor */}
           <CodeMirror
