@@ -5,7 +5,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion } from '@codemirror/autocomplete';
 import  CodeMirror  from '@uiw/react-codemirror';
 import { useDebouncedCallback } from 'use-debounce';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Container, CircularProgress } from '@mui/material';
 
 
 const CodeBlockPage = () => {
@@ -68,7 +68,14 @@ const CodeBlockPage = () => {
     const codeBlockDesc = codeBlock ? codeBlock.description : '';
       
     if (isLoading) {
-      return <p>Loading...</p>; 
+      return (
+        <Container sx={{ mt: 4, display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}>
+          <Box textAlign="center">
+            <CircularProgress />
+            <Typography mt={2}>Loading...</Typography>
+          </Box>
+        </Container>
+      ); 
     }
     
       return (

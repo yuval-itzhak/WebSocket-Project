@@ -8,6 +8,7 @@ import {
   CardActionArea,
   Box,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 
 
@@ -30,9 +31,16 @@ const Lobby = () => {
   }, []);
 
   if (isLoading) {
-    return <p>Loading...</p>; 
+    return (
+      <Container sx={{ mt: 4, display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}>
+        <Box textAlign="center">
+          <CircularProgress />
+          <Typography mt={2}>Loading...</Typography>
+        </Box>
+      </Container>
+    );
   }
-  
+
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom align="center">
