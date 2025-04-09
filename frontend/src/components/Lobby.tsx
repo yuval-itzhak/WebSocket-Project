@@ -32,6 +32,7 @@ const Lobby = () => {
         {codeBlocks.map((block) => (
           <Box key={block._id} width={{ xs: "100%", sm: "45%", md: "30%" }}>
             <Card variant="outlined" sx={{ height: "100%" }}>
+                {/* creating the code block url */}
                 <CardActionArea component={Link} to={`/codeblocks/${block._id}`} sx={{ height: "100%" }}>
                     <CardContent>
                         <Typography variant="h6" component="div" gutterBottom>

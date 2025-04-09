@@ -24,47 +24,49 @@ const CodeBlockPage = () => {
       setLoading(true);
       const apiUrl = process.env.REACT_APP_API_URL;
 
-        socketRef.current = io(`${apiUrl}`);
+      socketRef.current = io(`${apiUrl}`);
 
-        fetch(`${apiUrl}/api/codeBlocks/${roomId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setCodeBlock(data)
-          setLoading(false);
-        });
+      fetch(`${apiUrl}/api/codeBlocks/${roomId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setCodeBlock(data)
+        setLoading(false);
+      });
 
-        socketRef.current.emit('joinRoom', roomId);  
-        socketRef.current.on('role', (role: string) => setRole(role));
-        socketRef.current.on('codeUpdate', (updatedCode: string) => setCode(updatedCode));
-        socketRef.current.on('solution', (solution: string) => setSolution(solution));
-        socketRef.current.on('studentCount', (count: number) => setStudentCount(count));
-        socketRef.current.on('solutionCheckResult', (result: any) => setIsSolutionCorrect(result));
-        socketRef.current.on('mentorLeft', () => {
-          window.location.href = '/'; //redirect to lobby if mentor leaves
-        });
+      socketRef.current.emit('joinRoom', roomId);  
+      socketRef.current.on('role', (role: string) => setRole(role));
+      socketRef.current.on('codeUpdate', (updatedCode: string) => setCode(updatedCode));
+      socketRef.current.on('solution', (solution: string) => setSolution(solution));
+      socketRef.current.on('studentCount', (count: number) => setStudentCount(count));
+      socketRef.current.on('solutionCheckResult', (result: any) => setIsSolutionCorrect(result));
+      socketRef.current.on('mentorLeft', () => {
+        window.location.href = '/'; //redirect to lobby if mentor leaves
+      });
 
-        return () => {
-            socketRef.current.disconnect();
-          };
+      return () => {
+          socketRef.current.disconnect();
+      };
 
     }, []);
 
+    //wait until the user pauses for 400ms, then send the latest update
     const emitCodeUpdate = useDebouncedCallback((updatedCode: string) => {
         socketRef.current?.emit('codeUpdate', roomId, updatedCode);
         console.log(`im here`);
       }, 400); // wait 400 ms between after last key
 
+    //function for back to lobby button
     const handleClick = () => {
       window.location.href = '/';
     };
 
+    //panel for display the solution
     const togglePanel = () => {
       setShowPanel((prev) => !prev);
     };
 
     const codeBlockName = codeBlock ? codeBlock.name : '';
     const codeBlockDesc = codeBlock ? codeBlock.description : '';
-    //const isSolutionCorrect = code === solution && code !== ""; 
       
     if (isLoading) {
       return <p>Loading...</p>; 
@@ -95,7 +97,8 @@ const CodeBlockPage = () => {
           <Button variant="outlined" sx={{ mb: 2, mt: 2 }} onClick={togglePanel}>
             Click to see the solution
           </Button>
-
+          
+          {/* for display the solution */}
           {showPanel && (
             <Box
               sx={{
@@ -117,6 +120,7 @@ const CodeBlockPage = () => {
 
          {isSolutionCorrect && !isLoading && <div style={{ fontSize: '50px' }}>😊</div>}
 
+          {/* for the code editor */}
           <CodeMirror
             value={code}
             height="300px"
@@ -125,7 +129,6 @@ const CodeBlockPage = () => {
             onChange={(value) => {
               setCode(value);
               emitCodeUpdate(value);}}/>
-
       </Box>
   );   
 };

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import CodeBlock from '../models/CodeBlock';
 
+//route to get all code blocks
 export const getAllCodeBlocks = async (req: Request, res: Response) :Promise<any> => {
   try {
     const codeBlocks = await CodeBlock.find();
@@ -10,6 +11,7 @@ export const getAllCodeBlocks = async (req: Request, res: Response) :Promise<any
   }
 };
 
+//route to get a code block by code block id
 export const getCodeBlockById = async (req: Request, res: Response) :Promise<any> => {
   try {
     const codeBlock = await CodeBlock.findById(req.params.id);

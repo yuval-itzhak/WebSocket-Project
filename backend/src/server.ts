@@ -25,7 +25,7 @@ app.use(express.json());
 //routes
 app.use('/api', codeBlockRoutes);  
 
-
+//connecte to the db, setup websocket and start the server 
 connectDB(MONGO_URI).then(() => {
   setupSocket(server);
   server.listen(PORT, () => {

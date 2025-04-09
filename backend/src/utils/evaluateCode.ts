@@ -25,7 +25,8 @@ export const evaluateCode = async (
     const result = await runFunction(...functionParameters);
     return result;
     
+    //As long as the code student is not correct or valid, the program will end here
   } catch (error: any) {
-    console.error('Error evaluating student code:', error.message);
+    return { error: 'Error evaluating student code.' };
   }
 };
