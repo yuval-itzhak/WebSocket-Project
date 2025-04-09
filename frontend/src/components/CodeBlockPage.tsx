@@ -5,7 +5,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion } from '@codemirror/autocomplete';
 import  CodeMirror  from '@uiw/react-codemirror';
 import { useDebouncedCallback } from 'use-debounce';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 
 
 const CodeBlockPage = () => {
@@ -17,6 +17,7 @@ const CodeBlockPage = () => {
     const socketRef = useRef<any>(null);
     const [codeBlock, setCodeBlock] = useState<any>();
     const [isLoading, setLoading] = useState(true);
+    const [showPanel, setShowPanel] = useState(false);
 
     useEffect(() => { 
       setLoading(true);
@@ -51,28 +52,66 @@ const CodeBlockPage = () => {
         console.log(`im here`);
       }, 400); // wait 400 ms between after last key
 
-      const codeBlockName = codeBlock ? codeBlock.name : '';
-      const codeBlockDesc = codeBlock ? codeBlock.description : '';
-      const isSolutionCorrect = code === solution && code !== ""; 
+    const handleClick = () => {
+      window.location.href = '/';
+    };
+
+    const togglePanel = () => {
+      setShowPanel((prev) => !prev);
+    };
+
+    const codeBlockName = codeBlock ? codeBlock.name : '';
+    const codeBlockDesc = codeBlock ? codeBlock.description : '';
+    const isSolutionCorrect = code === solution && code !== ""; 
       
     if (isLoading) {
       return <p>Loading...</p>; 
     }
     
       return (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3, position: 'relative' }}>
+
+          <Box display="flex" justifyContent="right" alignItems="center" >
+            <Button variant='outlined' color='primary' size='small' onClick={handleClick}>
+              Back to Lobby
+            </Button>
+          </Box>
+
           <Typography variant="h4" gutterBottom>
             Code Block: {codeBlockName}
           </Typography>
           <Typography variant="body1" paragraph>
             {codeBlockDesc}
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body1" color="textSecondary">
             Role: {role}
           </Typography>
           <Typography variant="body2" color="textSecondary">
             Students in Room: {studentCount}
           </Typography>
+
+          <Button variant="outlined" sx={{ mb: 2, mt: 2 }} onClick={togglePanel}>
+            Click to see the solution
+          </Button>
+
+          {showPanel && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                p: 2,
+                mt: 2,
+                mb: 2,
+                border: '1px solid #ccc',
+                borderRadius: 2,
+              }}
+            >
+              <Typography variant="h6">solution</Typography>
+              <Typography variant="body2">{solution}</Typography>
+            </Box>
+          )}
+
+         {isSolutionCorrect && !isLoading && <div style={{ fontSize: '50px' }}>😊</div>}
 
           <CodeMirror
             value={code}
@@ -82,8 +121,6 @@ const CodeBlockPage = () => {
             onChange={(value) => {
               setCode(value);
               emitCodeUpdate(value);}}/>
-
-         {isSolutionCorrect && !isLoading && <div style={{ fontSize: '50px' }}>😊</div>}
 
       </Box>
   );   
