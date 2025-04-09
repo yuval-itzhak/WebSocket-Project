@@ -33,3 +33,6 @@ connectDB(MONGO_URI).then(() => {
   });
 });
 
+export { app, server };
+
+
