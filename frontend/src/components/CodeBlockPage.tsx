@@ -89,11 +89,11 @@ const CodeBlockPage = () => {
           <Typography variant="body1" color="textSecondary">
             Role: {role}
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body1" color="textSecondary">
             Students in Room: {studentCount}
           </Typography>
 
-          <Button variant="outlined" sx={{ mb: 2, mt: 2 }} onClick={togglePanel}>
+          <Button variant="outlined" sx={{ mb: 2, mt: 2 }} size='small' onClick={togglePanel}>
             Click to see the solution
           </Button>
 
