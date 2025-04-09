@@ -13,15 +13,26 @@ import {
 
 const Lobby = () => {
   const [codeBlocks, setCodeBlocks] = useState<any[]>([]);
+  const [isLoading, setLoading] = useState(true);
+  
 
   useEffect(() => {
+    setLoading(true);
     const apiUrl = process.env.REACT_APP_API_URL;
 
     fetch(`${apiUrl}/api/codeBlocks`)
       .then((res) => res.json())
-      .then((data) => setCodeBlocks(data));
+      .then((data) => {
+        setCodeBlocks(data);
+        setLoading(false);
+      });
+
   }, []);
 
+  if (isLoading) {
+    return <p>Loading...</p>; 
+  }
+  
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom align="center">

@@ -14,11 +14,11 @@ const CodeBlockPage = () => {
     const [role, setRole] = useState<string>('student');
     const [solution, setSolution] = useState<string>('');
     const [studentCount, setStudentCount] = useState<number>(0);
-    const socketRef = useRef<any>(null);
     const [codeBlock, setCodeBlock] = useState<any>();
     const [isLoading, setLoading] = useState(true);
     const [showPanel, setShowPanel] = useState(false);
     const [isSolutionCorrect, setIsSolutionCorrect] = useState(false);
+    const socketRef = useRef<any>(null);
 
     useEffect(() => { 
       setLoading(true);
