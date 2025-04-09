@@ -52,7 +52,6 @@ const CodeBlockPage = () => {
     //wait until the user pauses for 400ms, then send the latest update
     const emitCodeUpdate = useDebouncedCallback((updatedCode: string) => {
         socketRef.current?.emit('codeUpdate', roomId, updatedCode);
-        console.log(`im here`);
       }, 400); // wait 400 ms between after last key
 
     //function for back to lobby button
@@ -97,7 +96,7 @@ const CodeBlockPage = () => {
           <Button variant="outlined" sx={{ mb: 2, mt: 2 }} onClick={togglePanel}>
             Click to see the solution
           </Button>
-          
+
           {/* for display the solution */}
           {showPanel && (
             <Box
