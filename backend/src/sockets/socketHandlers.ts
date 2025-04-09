@@ -51,10 +51,11 @@ const handleSocketConnection = (io: Server, socket: Socket) => {
     const result = await evaluateCode(code, functionParameters, room.functionName);
     const isCorrect = result === expectedOutput;
 
-    socket.emit('solutionCheckResult', isCorrect);
+    io.to(roomId).emit('solutionCheckResult', isCorrect);
     await CodeBlock.updateOne(
         { _id: roomId },                  
         { $set: { currentCode: code } } );
+        
     socket.to(roomId).emit('codeUpdate', code);
   });
 
